@@ -1,0 +1,29 @@
+menu "Lamp configuration"
+
+    config DISCORD_TOKEN
+        string "Token"
+        help
+            Discord bot authentication token
+    
+    config RED_PIN
+        int "GPIO of red led pin"
+        range 0 99
+		default 5
+
+    config GREEN_PIN
+        int "GPIO of green led pin"
+        range 0 99
+		default 8
+
+    config BLUE_PIN
+        int "GPIO of blue led pin"
+        range 0 99
+		default 4
+
+    config MAX_BRIGHTNESS
+        string "maximal brightness"
+    
+    config INVERTED
+        bool "is logic of led pins inverted?"
+
+endmenu
