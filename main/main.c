@@ -126,10 +126,48 @@ esp_err_t init_wifi(){
                                                         NULL,
                                                         &instance_got_ip));
 
+    // READ VALUES FROM NVS
+
+    char ssid[64]; // Adjust the size as needed
+    size_t required_size;
+    esp_err_t nvs_get_result = nvs_get_str(nvs_handle, WIFI_SSID_KEY, NULL, &required_size);
+    if (nvs_get_result == ESP_OK) {
+        if (required_size > sizeof(value)) {
+            printf("Error: Value size exceeds buffer size\n");
+            nvs_close(nvs_handle);
+            return;
+        }
+        nvs_get_result = nvs_get_str(nvs_handle, WIFI_SSID_KEY, value, &required_size);
+        ESP_ERROR_CHECK(nvs_get_result);
+    } else if (nvs_get_result == ESP_ERR_NVS_NOT_FOUND) {
+        strcpy(value, "SAMPLE"); // Variable not found, initialize with a default value
+    } else {
+        ESP_ERROR_CHECK(nvs_get_result);
+    }
+
+    char pass[64]; // Adjust the size as needed
+    size_t required_size;
+    esp_err_t nvs_get_result = nvs_get_str(nvs_handle, WIFI_PASS_KEY, NULL, &required_size);
+    if (nvs_get_result == ESP_OK) {
+        if (required_size > sizeof(value)) {
+            printf("Error: Value size exceeds buffer size\n");
+            nvs_close(nvs_handle);
+            return;
+        }
+        nvs_get_result = nvs_get_str(nvs_handle, WIFI_PASS_KEY, value, &required_size);
+        ESP_ERROR_CHECK(nvs_get_result);
+    } else if (nvs_get_result == ESP_ERR_NVS_NOT_FOUND) {
+        strcpy(value, "SAMPLE"); // Variable not found, initialize with a default value
+    } else {
+        ESP_ERROR_CHECK(nvs_get_result);
+    }
+
+    //WIFI CONFIG
+
     wifi_config_t wifi_config = {
         .sta = {
-            .ssid = "your_wifi_ssid",
-            .password = "your_wifi_password"
+            .ssid = ssid,
+            .password = pass
         },
     };
 
@@ -143,6 +181,7 @@ esp_err_t init_wifi(){
 }
 
 void app_main(void) {
+
     ESP_ERROR_CHECK(LedPinStratup());
     ESP_LOGD(TAG,"leds initiated.");
     
@@ -171,24 +210,6 @@ void app_main(void) {
     ESP_ERROR_CHECK(discord_register_events(bot, DISCORD_EVENT_ANY, bot_event_handler, NULL));
     ESP_ERROR_CHECK(discord_login(bot));
     */
-
-
+   
     setRGB((uint8_t []){128,128,128});
-    vTaskDelay(pdMS_TO_TICKS(10));
-    /*
-    while(1){
-        for (uint8_t i = 0; i < 255; i++){
-            setRGB((uint8_t []){0,255-i,i});
-            vTaskDelay(10);
-        };
-        for (uint8_t i = 0; i < 255; i++){
-            setRGB((uint8_t []){i,0,255-i});
-            vTaskDelay(10);
-        };
-        for (uint8_t i = 0; i < 255; i++){
-            setRGB((uint8_t []){255-i,i,0});
-            vTaskDelay(10);
-        };
-    };
-    */
 }
